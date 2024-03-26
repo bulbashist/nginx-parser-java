@@ -1,23 +1,19 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.time.format.DateTimeFormatter;
 import java.time.ZonedDateTime;
 
 import com.google.gson.GsonBuilder;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import com.google.gson.Gson;
 
 public class Main {
     static Pattern pattern;
-    static ArrayList<TimeObj> dataset = new ArrayList<TimeObj>();
+//    static HashMap<String, TimeObj> dataset = new HashMap<>();
+    static ArrayList<TimeObj> dataset = new ArrayList<>();
 
     public static void main(String[] args) {
         try {
@@ -48,6 +44,7 @@ public class Main {
             try {
                 Gson gson = new GsonBuilder().disableHtmlEscaping().create();
                 String res = gson.toJson(dataset);
+
                 myWriter.write(res);
                 myWriter.close();
             } catch (Exception e) {}
@@ -74,13 +71,11 @@ public class Main {
             String userAgent = matcher.group(11);
             HttpRequest hr = new HttpRequest(ipAddress, timestamp, httpMethod, requestedUrl, protocol, statusCode, responseSize, userAgent);
 
-
-            boolean res = dataset.stream().anyMatch((obj) -> obj.time.equals(timestamp));
-
-            if (!res) {
-                dataset.add(new TimeObj(hr));
+            var request = dataset.stream().filter(obj -> obj.time.equals(hr.time)).findAny().orElse(null);
+            if (request != null) {
+                request.addRequest(hr);
             } else {
-//                dataset.stream().
+                dataset.add(new TimeObj(hr));
             }
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
@@ -99,7 +94,4 @@ public class Main {
  длина ответа
  "хз"
  "браузер?"
-
-
- "^(\\S+) (\\S+) (\\S+) \\[([^\\]]+)\\] \"(\\S+) (\\S+)\\S*\\s*\\S* (\\S+)\" (\\d+) (\\d+) \"([^\"]+)\" \"([^\"]+)\"$";
 */
