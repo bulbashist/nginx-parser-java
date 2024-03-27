@@ -1,7 +1,7 @@
 public class HttpRequest {
-    public String ip;
+    public transient final String ip;
 
-    public String time;
+    public transient final String time;
 
     public String httpMethod;
 
@@ -10,8 +10,6 @@ public class HttpRequest {
     public String protocol;
 
     public int statusCode;
-
-    public int responseSize;
 
     public String userAgent;
 
@@ -22,7 +20,6 @@ public class HttpRequest {
             String url,
             String protocol,
             int statusCode,
-            int responseSize,
             String userAgent
     ) {
         this.ip = ip;
@@ -31,7 +28,6 @@ public class HttpRequest {
         this.url = url;
         this.protocol = protocol;
         this.statusCode = statusCode;
-        this.responseSize = responseSize;
         this.userAgent = userAgent;
     }
 }

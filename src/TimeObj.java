@@ -22,7 +22,13 @@ public class TimeObj {
         try {
             this.totalRequests += 1;
 
-            var request = this.requests.stream().filter(obj -> obj.ip.equals(req.ip)).findAny().orElse(null);
+            var request = this.requests
+                    .stream()
+                    .parallel()
+                    .filter(obj -> obj.ip.equals(req.ip))
+                    .findAny()
+                    .orElse(null);
+
             if (request != null) {
                 request.addRequest(req);
             } else {
