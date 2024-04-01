@@ -1,14 +1,13 @@
 import java.util.ArrayList;
 
 public class Obj2 {
-
     public String ip;
     public int totalIPRequests;
 
     public ArrayList<HttpRequest> ipRequests;
 
-    public Obj2(HttpRequest req) {
-        this.ip = req.ip;
+    public Obj2(HttpRequest req, String ip) {
+        this.ip = ip;
         this.totalIPRequests = 1;
         this.ipRequests = new ArrayList<HttpRequest>();
         this.ipRequests.add(req);
