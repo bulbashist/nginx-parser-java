@@ -1,4 +1,0 @@
-14:55:13 Incorrect start date format, this argument will be ignored
-14:55:13 File has been read
-14:55:15 Data has been transformed
-14:55:16 Completed

@@ -2,10 +2,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -25,7 +24,8 @@ public class Main {
                     String fromTimeArg = args.length >= 3 ? args[2] : null;
                     String toTimeArg = args.length >= 4 ? args[3] : null;
 
-                    DateTimeFormatter argsTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm.ss").withZone(ZoneOffset.ofHours(+3));
+                    ZoneOffset utc3 = ZoneOffset.ofHours(+3);
+                    DateTimeFormatter argsTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm.ss").withZone(utc3);
                     if (fromTimeArg != null) {
                         try {
                             fromTime = ZonedDateTime.parse(fromTimeArg, argsTimeFormatter);
@@ -37,7 +37,18 @@ public class Main {
                         try {
                             toTime = ZonedDateTime.parse(toTimeArg, argsTimeFormatter);
                         } catch (DateTimeParseException e) {
-                            logger.logException(e, "Incorrect end date format, this argument will be ignored");
+                            try {
+                                if (fromTime != null) {
+                                    DateTimeFormatter hourTimeFormatter = DateTimeFormatter.ofPattern("HH.mm.ss").withZone(utc3);
+                                    LocalTime time = LocalTime.parse(toTimeArg, hourTimeFormatter);
+                                    LocalDate date = LocalDate.of(fromTime.getYear(), fromTime.getMonthValue(), fromTime.getDayOfMonth());
+                                    toTime = time.atDate(date).atZone(utc3);
+                                } else {
+                                    logger.logException(e, "Incorrect end date format, this argument will be ignored");
+                                }
+                            } catch (DateTimeParseException ex) {
+                                logger.logException(ex, "Incorrect end date format, this argument will be ignored");
+                            }
                         }
                     }
 
@@ -82,9 +93,7 @@ public class Main {
                     lines2.stream().parallel().forEach(line -> {
                         try {
                             var hr = parser.parse(line);
-                            if (hr != null) {
-                                storage.add(hr);
-                            }
+                            storage.add(hr);
                         } catch (Exception e) {
                             logger.logException(e);
                         }

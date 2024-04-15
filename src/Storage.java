@@ -4,6 +4,8 @@ public class Storage {
     private final CopyOnWriteArrayList<TimeGroup> _dataset = new CopyOnWriteArrayList<>();
 
     public void add(HttpRequest hr) {
+        if (hr == null) return;
+
         var request = this._dataset
                 .stream()
                 .parallel()
